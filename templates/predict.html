@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bangalore Home Price Prediction - Predict</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='home.js') }}"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+      
+      .navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 1rem 2rem;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+      }
+      
+      .nav-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+      
+      .nav-links a {
+        color: #333;
+        text-decoration: none;
+        margin-left: 2rem;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+      }
+      
+      .nav-links a:hover {
+        background: #667eea;
+        color: white;
+      }
+      
+      .main-content {
+        padding: 120px 2rem 4rem;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      
+      .page-header {
+        text-align: center;
+        color: white;
+        margin-bottom: 3rem;
+      }
+      
+      .page-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+      
+      .page-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+      }
+      
+      .prediction-form {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+      }
+      
+      .form-title {
+        text-align: center;
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+        color: #333;
+      }
+      
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+      
+      .form-group.full-width {
+        grid-column: 1 / -1;
+      }
+      
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #555;
+        font-size: 0.95rem;
+      }
+      
+      input, select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e1e5e9;
+        border-radius: 10px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+      }
+      
+      input:focus, select:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+      
+      .submit-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+      }
+      
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+      }
+      
+      .submit-btn:active {
+        transform: translateY(0);
+      }
+      
+      #uiEstimatedPrice {
+        margin-top: 2rem;
+        text-align: center;
+        padding: 2rem;
+        border-radius: 15px;
+        font-size: 1.2rem;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .price-result {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        color: white;
+        border: none;
+        animation: fadeInUp 0.5s ease;
+      }
+      
+      .error {
+        background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        color: white;
+        border: none;
+      }
+      
+      .loading {
+        background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        color: white;
+        border: none;
+      }
+      
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .info-tips {
+        background: #e3f2fd;
+        border: 1px solid #2196f3;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+      }
+      
+      .info-tips h3 {
+        color: #1976d2;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+      }
+      
+      .info-tips ul {
+        list-style: none;
+        padding-left: 0;
+      }
+      
+      .info-tips li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #bbdefb;
+        color: #1565c0;
+      }
+      
+      .info-tips li:last-child {
+        border-bottom: none;
+      }
+      
+      .info-tips li:before {
+        content: "💡 ";
+        margin-right: 0.5rem;
+      }
+      
+      @media (max-width: 768px) {
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .page-header h1 {
+          font-size: 2rem;
+        }
+        
+        .prediction-form {
+          padding: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-content">
+        <div class="logo">🏠 HousePredict</div>
+        <div class="nav-links">
+          <a href="/">Home</a>
+          <a href="/predict">Predict Price</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <div class="page-header">
+        <h1>🏠 House Price Prediction</h1>
+        <p>Enter the details below to get an accurate price estimate for your dream home in Bangalore</p>
+      </div>
+
+      <div class="prediction-form">
+        <h2 class="form-title">📋 Property Details</h2>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="uiSqft">🏠 Area (sqft)</label>
+            <input type="number" id="uiSqft" placeholder="Enter area in square feet" min="100" max="10000" />
+          </div>
+
+          <div class="form-group">
+            <label for="uiBHK">🛏️ BHK</label>
+            <input type="number" id="uiBHK" placeholder="Number of bedrooms" min="1" max="10" />
+          </div>
+
+          <div class="form-group">
+            <label for="uiBath">🚿 Bathrooms</label>
+            <input type="number" id="uiBath" placeholder="Number of bathrooms" min="1" max="10" />
+          </div>
+
+          <div class="form-group full-width">
+            <label for="uiLocations">📍 Location</label>
+            <select id="uiLocations">
+              <option value="">Select a location in Bangalore</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="uiArea">🏗️ Area Type</label>
+            <select id="uiArea">
+              <option value="">Select area type</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="uiAvailability">⏰ Availability</label>
+            <select id="uiAvailability">
+              <option value="">Select availability</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="submit-btn" onclick="onClickedEstimatePrice()">
+          💰 Get Price Estimate
+        </button>
+
+        <div id="uiEstimatedPrice"></div>
+
+        <div class="info-tips">
+          <h3>💡 Tips for Accurate Predictions</h3>
+          <ul>
+            <li>Ensure the area is in square feet (not square meters)</li>
+            <li>BHK should include all bedrooms (including study rooms)</li>
+            <li>Bathrooms count should include all washrooms</li>
+            <li>Select the exact location for better accuracy</li>
+            <li>Area type helps determine the construction quality</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
